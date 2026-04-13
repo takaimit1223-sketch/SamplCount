@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Data Sampling Engine</title>
+    
+    <!-- PWA / iOS Optimization Tags -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SampCount">
+    <!-- <link rel="apple-touch-icon" href="./icon-192.png"> -->
+    <meta name="theme-color" content="#6366f1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Data Sampling Engine</h1>
+            <p>Calculate your total samples with precision and speed.</p>
+        </header>
+        
+        <main class="card">
+            <form id="sampling-form">
+                <div class="form-group mode-selector">
+                    <label>入力方式を選択 (Input Mode)</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="input_mode" value="time_range" checked>
+                            <span>期間指定 (Start / End)</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="input_mode" value="duration">
+                            <span>時間幅指定 (Duration)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group time-range-group active" id="group-time-range">
+                    <label>観測期間 (Time Range)</label>
+                    <div class="input-row">
+                        <div class="input-wrapper">
+                            <span class="input-label">開始 (Start)</span>
+                            <input type="datetime-local" id="t-start" name="t_start" step="1">
+                        </div>
+                        <div class="input-wrapper">
+                            <span class="input-label">終了 (End)</span>
+                            <input type="datetime-local" id="t-end" name="t_end" step="1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group duration-group" id="group-duration" style="display: none;">
+                    <label for="delta-t">時間幅 (Duration)</label>
+                    <input type="text" id="delta-t" name="delta_t" placeholder="例: 1:00 (1時間) または 1:30:00">
+                </div>
+
+                <div class="form-group sampling-rate-group">
+                    <label>サンプリング間隔 (Sampling Interval)</label>
+                    <div class="input-row">
+                        <input type="number" id="f-s-value" name="f_s_value" placeholder="例: 10" required min="0.001" step="0.001" value="10">
+                        <select id="f-s-unit" name="f_s_unit">
+                            <option value="sec">秒 (sec)</option>
+                            <option value="min">分 (min)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="calculate-btn">
+                    <span>計算を実行 (Calculate)</span>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </form>
+
+            <div class="result-container" id="result-container">
+                <div class="result-box">
+                    <h3>サンプリング合計数 (Total Samples)</h3>
+                    <div class="result-value">
+                        <span id="n-result">--</span>
+                        <span class="unit">points</span>
+                    </div>
+                    <div id="error-message" class="error-msg"></div>
+                    <div id="warning-message" class="warning-msg"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('ServiceWorker registered:', reg.scope))
+                .catch(err => console.log('ServiceWorker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
